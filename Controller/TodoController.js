@@ -1,7 +1,8 @@
 const ToDoModel = require("../db/todoModel");
 
 module.exports.getToDo = async (req, res) => {
-    const todo = await ToDoModel.find();
+    const {id} = req.query;
+    const todo = await ToDoModel.find({id});
     res.send(todo);
 }
 
@@ -19,17 +20,22 @@ module.exports.saveToDo = (req, res) => {
 }
 
 module.exports.deleteToDo = (req, res) => {
-    const { id } = req.params;
-
-    console.log('id ---> ', id);
-
-    ToDoModel
-        .findByIdAndDelete(id)
-        .then(() => res.status(201).send("Deleted Successfully..."))
-        .catch((err) => {
-            console.log(err);
-            res.status(400).send("Failed to delete item.");
-        });
+    try {
+        const { id } = req.query;
+    
+        console.log('id ---> ', req);
+    
+        ToDoModel
+            .deleteOne({id})
+            .then(() => res.status(201).send("Deleted Successfully..."))
+            .catch((err) => {
+                console.log(err);
+                res.status(400).send("Failed to delete item.");
+            });
+        
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 module.exports.updateToDo = (req, res) => {
